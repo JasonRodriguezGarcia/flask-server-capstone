@@ -1,0 +1,374 @@
+Relación de municipios y códigos por provincias a 1 de enero de 20			
+GUIPUZCOA			
+CPRO	CMUN	DC	NOMBRE
+20	001	3	Abaltzisketa
+20	002	8	Aduna
+20	016	3	Aia
+20	003	4	Aizarnazabal
+20	004	9	Albiztur
+20	005	2	Alegia
+20	006	5	Alkiza
+20	906	6	Altzaga
+20	007	1	Altzo
+20	008	7	Amezketa
+20	009	0	Andoain
+20	010	4	Anoeta
+20	011	1	Antzuola
+20	012	6	Arama
+20	013	2	Aretxabaleta
+20	055	1	Arrasate/Mondragó
+20	014	7	Asteasu
+20	903	5	Astigarraga
+20	015	0	Ataun
+20	017	9	Azkoitia
+20	018	5	Azpeitia
+20	904	0	Baliarrain
+20	019	8	Beasain
+20	020	2	Beizama
+20	021	9	Belauntza
+20	022	4	Berastegi
+20	074	4	Bergara
+20	023	0	Berrobi
+20	024	5	Bidegoian
+20	029	6	Deba
+20	069	7	Donostia-San Sebastiá
+20	030	0	Eibar
+20	031	7	Elduain
+20	033	8	Elgeta
+20	032	2	Elgoibar
+20	067	8	Errenteria
+20	066	2	Errezil
+20	034	3	Eskoriatza
+20	035	6	Ezkio-Itsaso
+20	038	1	Gabiria
+20	037	5	Gaintza
+20	907	2	Gaztelu
+20	039	4	Getaria
+20	040	8	Hernani
+20	041	5	Hernialde
+20	036	9	Hondarribia
+20	042	0	Ibarra
+20	043	6	Idiazabal
+20	044	1	Ikaztegieta
+20	045	4	Irun
+20	046	7	Irura
+20	047	3	Itsasondo
+20	048	9	Larraul
+20	902	9	Lasarte-Oria
+20	049	2	Lazkao
+20	050	5	Leaburu
+20	051	2	Legazpi
+20	052	7	Legorreta
+20	068	4	Leintz-Gatzaga
+20	053	3	Lezo
+20	054	8	Lizartza
+20	901	4	Mendaro
+20	057	0	Mutiloa
+20	056	4	Mutriku
+20	063	1	Oiartzun
+20	058	6	Olaberria
+20	059	9	Oñat
+20	076	0	Ordizia
+20	905	3	Orendain
+20	060	3	Orexa
+20	061	0	Orio
+20	062	5	Ormaiztegi
+20	064	6	Pasaia
+20	070	1	Segura
+20	065	9	Soraluze/Placencia de las Armas
+20	071	8	Tolosa
+20	072	3	Urnieta
+20	077	6	Urretxu
+20	073	9	Usurbil
+20	075	7	Villabona
+20	078	2	Zaldibia
+20	079	5	Zarautz
+20	025	8	Zegama
+20	026	1	Zerain
+20	027	7	Zestoa
+20	028	3	Zizurkil
+20	081	6	Zumaia
+20	080	9	Zumarraga
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
