@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from sqlalchemy import text
 from flask_marshmallow import Marshmallow
-import os, json
+import os, json 
 # To run server
 # \CapstoneProject\Project1\flask-server> .\venv\Scripts\activate
 # \CapstoneProject\Project1\flask-server> flask run --debug  
