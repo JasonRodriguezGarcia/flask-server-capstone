@@ -11,7 +11,8 @@ import os, json
 
 app = Flask(__name__)
 # Allowing access to Flask server to following ips, second IP is example for more ip's list case
-CORS(app, origins=["http://localhost:3000", "http://192.168.0.27", "http://193.3.33.1:3550"])
+CORS(app, origins=["http://localhost:3000", "http://192.168.0.27", "https://client-react-capstone.onrender.com"])
+# CORS(app, origins=["http://localhost:3000", "http://192.168.0.27", "https://client-react-capstone.onrender.com"])
 
 db_file = './databases/database.db'
 # base application directory, where to save our sql table, where to place our sqlite database 
