@@ -968,6 +968,6 @@ def editworker(id):
 
 if __name__ == '__main__':
     # use_reloaded to avoid echo on reply from Flask
-    app.run(port=5000, host="3.75.158.163", debug=False, use_reloader=False)
+    app.run(port=5000, host="0.0.0.0", debug=False, use_reloader=False)
     # app.run(port=5000, host="localhost", debug=True, use_reloader=False)
 
