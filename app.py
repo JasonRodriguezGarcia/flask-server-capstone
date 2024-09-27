@@ -586,7 +586,7 @@ def get_listenterprises(id = None):
     return jsonify(response)
 
 # Route to select one enterprise cif (can not be repeated).
-@app.route('/check_cifexist/<cif>', methods=["POST", "PUT"])
+@app.route('/check_cifexist/<cif>', methods=["GET"])
 def check_cifexist(cif): 
     result = db.session.execute(text(f'SELECT * FROM empresas WHERE empresas_cif = '+cif+';'))
     db.session.commit()
@@ -604,7 +604,7 @@ def check_cifexist(cif):
         return "true"
     # return jsonify(response)
 # Route to select one worker doi (can not be repeated).
-@app.route('/check_doiexist/<doi>', methods=["POST", "PUT"])
+@app.route('/check_doiexist/<doi>', methods=["GET"])
 def check_doiexist(doi): 
     result = db.session.execute(text(f'SELECT * FROM trabajadores WHERE trabajadores_doi = '+doi+';'))
     db.session.commit()
@@ -788,6 +788,7 @@ def get_listworkers(id = None):
             i+= 1
     print ("api get_listworker ended ...")
     return jsonify(response)
+
 
 # Route to delete one worker(trabajador)
 @app.route('/deleteworker/<id>', methods=['DELETE'])
