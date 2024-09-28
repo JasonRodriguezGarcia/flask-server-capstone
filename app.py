@@ -165,7 +165,7 @@ def generate_offerresults(id = None):
                 for eachCurrent in currentResultData:
                     if each['trabajadores_id_trabajador'] == eachCurrent['ofertas_resultados_id_trabajador']:
                         print ("ALREADY EXISTS")
-                        print (eachCurrent)
+                        # print (eachCurrent)
                         exist = True
                         # Updating workerState(trabajador_estado), could be status is changed
                         # Update response status with current offerResult status
@@ -180,8 +180,8 @@ def generate_offerresults(id = None):
                         print ("DOESNT EXIST: ", each['trabajadores_id_trabajador'])
                         newElementToAdd = each
                         updates = True
-                        print("imprimo each: ", each)
-                        print("imprimo newElementToAdd: ",newElementToAdd)
+                        # print("imprimo each: ", each)
+                        # print("imprimo newElementToAdd: ",newElementToAdd)
             # In case currentResultData is empty with no OfferResults and myResult have data (new Result editing offer with no results)
                 
                 if exist == False:
