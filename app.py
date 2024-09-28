@@ -99,12 +99,17 @@ def save_offerresults(id):
     return response
 
 # Process to get offerresults from one offer(oferta) or all
+# Process requery the criteria every time the offer is saved
+# In offerEditMode = False (new offer created) the results are presented as per criteria fields values, giving the posibility to
+# change the status for one worker inside the offer to Suitable - Unfit - Hire
+# In offerEditMode = True (offer is edited) the results presented could add or not new workers depending on Criteria fields, the
+# behaviour is to add new workers or not each time one offer is edited
 @app.route('/generate_offerresults/<id>', methods=['POST','GET'])
 @app.route('/generate_offerresults', methods=['POST','GET'])
 def generate_offerresults(id = None):
     sqlCriteriaString = request.get_json()['criteria']
     offerEditMode = request.get_json()['offerEditMode']
-    # Generating offerResults
+    # Generating offerResults, new results if new offer, if editing offer may be additiona results could appear
     result = db.session.execute(text('\
             SELECT trabajadores.trabajadores_id_trabajador, \
                     trabajadores.trabajadores_nombre, \
@@ -137,90 +142,99 @@ def generate_offerresults(id = None):
         currentResult = db.session.execute(text('SELECT * FROM ofertas_resultados \
                                                     WHERE ofertas_resultados_id_oferta = '+id+';'))
         db.session.close() # ONLY .CLOSE WITH .FETCHALL(), THE REST IS .COMMIT() !!!
-        myResult = currentResult.fetchall()
-        myResultFieldsName = currentResult.keys()
+        myResultEdit = currentResult.fetchall()
+        myResultEditFieldsName = currentResult.keys()
         #Convert data to dictionary
         currentResultData = []
-        for record in myResult:
-            currentResultData.append(dict(zip(myResultFieldsName, record)))
-        print("imprimo currentResultData:", currentResultData)
-        # Loop to check if additional worker added in case, to be added to offerResult
-        # Leveraging the loop to update workerState(trabajador_estado)
-        updates = False
-        for each in response:
-            #
-            # Check if worker(trabajador) already in currentResultData
-            #
-            exist = False
-            newElementToAdd = []
-            for eachCurrent in currentResultData:
-                if each['trabajadores_id_trabajador'] == eachCurrent['ofertas_resultados_id_trabajador']:
-                    print ("ALREADY EXISTS")
-                    exist = True
-                    # Updating workerState(trabajador_estado), could be status is changed
-                    # Update response status with current offerResult status
-                    each['trabajador_estado'] = eachCurrent['ofertas_resultados_trabajador_estado']
-                    db.session.execute(text('UPDATE ofertas_resultados SET \
-                                                ofertas_resultados_trabajador_estado = "'+each['trabajador_estado']+'" \
-                                            WHERE ofertas_resultados_id_trabajador = '+str(each['trabajadores_id_trabajador'])+' \
-                                                    AND ofertas_resultados_id_oferta = '+id+';'))
-                    db.session.commit()
-                    break
-                else:
-                    print ("DOESNT EXIST: ", each['trabajadores_id_trabajador'])
-                    newElementToAdd = each
-                    updates = True
-            if exist == False:
-                # Adding newElement in offerResults(ofertas_resultados) from offerResultsToSave
-                print("ELEMENTO A AÑADIR")
-                print(newElementToAdd)
-                parameters = ({
-                    "id_oferta": id,
-                    "trabajadores_id_trabajador" : newElementToAdd["trabajadores_id_trabajador"],
-                    "trabajador_estado" : newElementToAdd["trabajador_estado"],
-                    "contratado" : newElementToAdd["trabajador_contratado"]
-                })
-                result = db.session.execute(text(
-                    f'INSERT INTO ofertas_resultados (\
-                            ofertas_resultados_id_oferta, \
-                            ofertas_resultados_id_trabajador, \
-                            ofertas_resultados_trabajador_estado, \
-                            ofertas_resultados_contratado) \
-                        VALUES (:id_oferta, :trabajadores_id_trabajador, :trabajador_estado, :contratado) \
-                        ;'), parameters)
-                db.session.commit()
-            if updates:
-                #In case any newElement retrieving current offerResults(ofertas_resultado) Data,
-                # now updated and stored in response
-                result = db.session.execute(text('\
-                        SELECT trabajadores.trabajadores_id_trabajador, \
-                                trabajadores.trabajadores_nombre, \
-                                trabajadores.trabajadores_apellidos, \
-                                trabajadores.trabajadores_telefono_contacto, \
-                                trabajadores_ocupaciones.trabajadores_ocupaciones_id_ocupacion, \
-                                trabajadores_ocupaciones.trabajadores_ocupaciones_meses, \
-                                trabajadores_formaciones.trabajadores_formaciones_id_formacion, \
-                                trabajadores.trabajadores_id_vehiculo, \
-                                trabajadores.trabajadores_id_situacion, \
-                                ofertas_resultados.ofertas_resultados_trabajador_estado as "trabajador_estado", \
-                                ofertas_resultados.ofertas_resultados_contratado as "trabajador_contratado" \
-                                FROM trabajadores  \
-                                    LEFT JOIN trabajadores_ocupaciones ON trabajadores.trabajadores_id_trabajador = trabajadores_ocupaciones.trabajadores_ocupaciones_id_trabajador \
-                                    LEFT JOIN trabajadores_formaciones ON trabajadores.trabajadores_id_trabajador = trabajadores_formaciones.trabajadores_formaciones_id_trabajador \
-                                    LEFT JOIN vehiculos ON trabajadores.trabajadores_id_vehiculo = vehiculos.vehiculos_id_vehiculo \
-                                    LEFT JOIN ofertas_resultados ON trabajadores.trabajadores_id_trabajador = ofertas_resultados.ofertas_resultados_id_trabajador \
-                                WHERE ofertas_resultados.ofertas_resultados_id_oferta = '+id+
-                                ' GROUP BY trabajadores.trabajadores_id_trabajador \
-                                ORDER BY ofertas_resultados.ofertas_resultados_id_resultado;'))
-                db.session.close() # ONLY .CLOSE WITH .FETCHALL(), THE REST IS .COMMIT() !!!
-                response = [] 
-                myResult = result.fetchall()
-                myResultFieldsName = result.keys()
-                #Convert data to dictionary
-                response = []
-                for record in myResult:
-                    response.append(dict(zip(myResultFieldsName, record)))
+        for record in myResultEdit:
+            currentResultData.append(dict(zip(myResultEditFieldsName, record)))
+        # print("imprimo currentResultData:", currentResultData)
+        
+        #If editing one offer without previous data, it is like create new offer even if we are editing the offer.
+        #That means same behaviour than new offer, and response on the begining is used to save offer result data.
+        if len(currentResultData) > 0:                        
+            # Loop to check if additional worker added in case, to be added to offerResult
+            # Leveraging the loop to update workerState(trabajador_estado)
+            updates = False
+            for each in response:
+                #
+                # Check if worker(trabajador) already in currentResultData
+                #
+                exist = False
+                newElementToAdd = []
+                for eachCurrent in currentResultData:
+                    if each['trabajadores_id_trabajador'] == eachCurrent['ofertas_resultados_id_trabajador']:
+                        print ("ALREADY EXISTS")
+                        print (eachCurrent)
+                        exist = True
+                        # Updating workerState(trabajador_estado), could be status is changed
+                        # Update response status with current offerResult status
+                        each['trabajador_estado'] = eachCurrent['ofertas_resultados_trabajador_estado']
+                        db.session.execute(text('UPDATE ofertas_resultados SET \
+                                                    ofertas_resultados_trabajador_estado = "'+each['trabajador_estado']+'" \
+                                                WHERE ofertas_resultados_id_trabajador = '+str(each['trabajadores_id_trabajador'])+' \
+                                                        AND ofertas_resultados_id_oferta = '+id+';'))
+                        db.session.commit()
+                        break
+                    else:
+                        print ("DOESNT EXIST: ", each['trabajadores_id_trabajador'])
+                        newElementToAdd = each
+                        updates = True
+                        print("imprimo each: ", each)
+                        print("imprimo newElementToAdd: ",newElementToAdd)
+            # In case currentResultData is empty with no OfferResults and myResult have data (new Result editing offer with no results)
                 
+                if exist == False:
+                    # Adding newElement in offerResults(ofertas_resultados) from offerResultsToSave
+                    print("ELEMENTO A AÑADIR")
+                    print(newElementToAdd)
+                    parameters = ({
+                        "id_oferta": id,
+                        "trabajadores_id_trabajador" : newElementToAdd["trabajadores_id_trabajador"],
+                        "trabajador_estado" : newElementToAdd["trabajador_estado"],
+                        "contratado" : newElementToAdd["trabajador_contratado"]
+                    })
+                    result = db.session.execute(text(
+                        f'INSERT INTO ofertas_resultados (\
+                                ofertas_resultados_id_oferta, \
+                                ofertas_resultados_id_trabajador, \
+                                ofertas_resultados_trabajador_estado, \
+                                ofertas_resultados_contratado) \
+                            VALUES (:id_oferta, :trabajadores_id_trabajador, :trabajador_estado, :contratado) \
+                            ;'), parameters)
+                    db.session.commit()
+                if updates:
+                    #In case any newElement retrieving current offerResults(ofertas_resultado) Data,
+                    # now updated and stored in response
+                    result = db.session.execute(text('\
+                            SELECT trabajadores.trabajadores_id_trabajador, \
+                                    trabajadores.trabajadores_nombre, \
+                                    trabajadores.trabajadores_apellidos, \
+                                    trabajadores.trabajadores_telefono_contacto, \
+                                    trabajadores_ocupaciones.trabajadores_ocupaciones_id_ocupacion, \
+                                    trabajadores_ocupaciones.trabajadores_ocupaciones_meses, \
+                                    trabajadores_formaciones.trabajadores_formaciones_id_formacion, \
+                                    trabajadores.trabajadores_id_vehiculo, \
+                                    trabajadores.trabajadores_id_situacion, \
+                                    ofertas_resultados.ofertas_resultados_trabajador_estado as "trabajador_estado", \
+                                    ofertas_resultados.ofertas_resultados_contratado as "trabajador_contratado" \
+                                    FROM trabajadores  \
+                                        LEFT JOIN trabajadores_ocupaciones ON trabajadores.trabajadores_id_trabajador = trabajadores_ocupaciones.trabajadores_ocupaciones_id_trabajador \
+                                        LEFT JOIN trabajadores_formaciones ON trabajadores.trabajadores_id_trabajador = trabajadores_formaciones.trabajadores_formaciones_id_trabajador \
+                                        LEFT JOIN vehiculos ON trabajadores.trabajadores_id_vehiculo = vehiculos.vehiculos_id_vehiculo \
+                                        LEFT JOIN ofertas_resultados ON trabajadores.trabajadores_id_trabajador = ofertas_resultados.ofertas_resultados_id_trabajador \
+                                    WHERE ofertas_resultados.ofertas_resultados_id_oferta = '+id+
+                                    ' GROUP BY trabajadores.trabajadores_id_trabajador \
+                                    ORDER BY ofertas_resultados.ofertas_resultados_id_resultado;'))
+                    db.session.close() # ONLY .CLOSE WITH .FETCHALL(), THE REST IS .COMMIT() !!!
+                    response = [] 
+                    myResult = result.fetchall()
+                    myResultFieldsName = result.keys()
+                    #Convert data to dictionary
+                    response = []
+                    for record in myResult:
+                        response.append(dict(zip(myResultFieldsName, record)))
+                    
     print("imprimiendo generate_offerresults")
     print(response)
     print ("api generate_offerresults ended ...")
@@ -706,7 +720,7 @@ def get_worker_secundary_databases():
                     f'{listTables[3][0]}': response4,
                     f'{listTables[4][0]}': response5,
                     f'{listTables[5][0]}': response6,
-                    f'{listTables[6][0]}': response7,
+                    f'{listTables[6][0]}': response7
                 }
     print ("api workers_secundary_databases ended ...")
     return response
@@ -806,7 +820,7 @@ def deleteworker(id):
     return response
 
 # Route to add worker in the database
-@app.route('/addworker', methods=["POST", "PUT", "PATCH", "GET"]) 
+@app.route('/addworker', methods=["POST", "GET"]) 
 def addworker(): 
     # Populating Workers/trabajadores table
     parameters = ({
