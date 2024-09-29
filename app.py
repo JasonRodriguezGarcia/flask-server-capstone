@@ -776,8 +776,9 @@ def get_listworkers(id = None):
                 # Retrieving Ocupaciones/Ocupations DATA if id in use
                 resultOcupaciones=db.session.execute(text(
                     f'SELECT o.ocupaciones_id_ocupacion, o.ocupaciones_descripcion_ocupacion, \
-                            t.trabajadores_ocupaciones_meses, m.municipios_descripcion_municipio \
+                            t.trabajadores_ocupaciones_meses \
                         FROM trabajadores_ocupaciones t \
+                        JOIN ocupaciones o ON ocupaciones_id_ocupacion = trabajadores_ocupaciones_id_ocupacion \
                         WHERE t.trabajadores_ocupaciones_id_trabajador = '+id+';'))
                 db.session.commit()
                 # ITERATE OVER EACH RECORD IN RESULT AND ADD IT  
