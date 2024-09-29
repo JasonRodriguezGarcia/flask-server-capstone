@@ -70,7 +70,7 @@ CREATE TABLE `idiomas` (
 DROP TABLE IF EXISTS `jornadas`;
 CREATE TABLE `jornadas` (
   `jornadas_id_jornada` INTEGER NOT NULL, -- AUTO_INCREMENT,
-  `jornadas_descipcion_jornada` TEXT(20) NOT NULL,
+  `jornadas_descripcion_jornada` TEXT(20) NOT NULL,
   `jornadas_descipcion_jornada_texto_libre` TEXT(20),
   PRIMARY KEY (`jornadas_id_jornada`),
   UNIQUE (`jornadas_id_jornada`)

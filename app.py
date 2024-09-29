@@ -109,7 +109,7 @@ def save_offerresults(id):
 def generate_offerresults(id = None):
     sqlCriteriaString = request.get_json()['criteria']
     offerEditMode = request.get_json()['offerEditMode']
-    # Generating offerResults, new results if new offer, if editing offer may be additiona results could appear
+    # Generating new results if new offer with criteria string, if editing offer may be additional results could appear
     result = db.session.execute(text('\
             SELECT trabajadores.trabajadores_id_trabajador, \
                     trabajadores.trabajadores_nombre, \
@@ -126,7 +126,7 @@ def generate_offerresults(id = None):
                         LEFT JOIN trabajadores_ocupaciones ON trabajadores.trabajadores_id_trabajador = trabajadores_ocupaciones.trabajadores_ocupaciones_id_trabajador \
                         LEFT JOIN trabajadores_formaciones ON trabajadores.trabajadores_id_trabajador = trabajadores_formaciones.trabajadores_formaciones_id_trabajador \
                         LEFT JOIN vehiculos ON trabajadores.trabajadores_id_vehiculo = vehiculos.vehiculos_id_vehiculo \
-                    WHERE '+sqlCriteriaString+' GROUP BY trabajadores.trabajadores_id_trabajador;'))
+                    WHERE '+sqlCriteriaString+' GROUP BY trabajadores.trabajadores_doi;'))
     db.session.close() # ONLY .CLOSE WITH .FETCHALL(), THE REST IS .COMMIT() !!!
     response = [] 
     myResult = result.fetchall()
@@ -150,11 +150,31 @@ def generate_offerresults(id = None):
             currentResultData.append(dict(zip(myResultEditFieldsName, record)))
         # print("imprimo currentResultData:", currentResultData)
         
-        #If editing one offer without previous data, it is like create new offer even if we are editing the offer.
-        #That means same behaviour than new offer, and response on the begining is used to save offer result data.
-        if len(currentResultData) > 0:                        
+        #If editing one offer result without current data and there are new offer results, they have to be added
+        # by another way
+        if len(currentResultData) == 0:
+            print("no currentData")
+            #Loop to Insert result data to empty offerResult
+            print("Inserting offerResult in empty offer")
+            print("Imprimo result:", result)
+            for data in response:
+                parameters = ({
+                    "id_oferta": id,
+                    "trabajadores_id_trabajador" : data["trabajadores_id_trabajador"],
+                    "trabajador_estado" : 'x',
+                    "contratado" : 'no contratado'
+                })
+                db.session.execute(text(
+                    f'INSERT INTO ofertas_resultados (\
+                            ofertas_resultados_id_oferta, \
+                            ofertas_resultados_id_trabajador, \
+                            ofertas_resultados_trabajador_estado, \
+                            ofertas_resultados_contratado) \
+                        VALUES (:id_oferta, :trabajadores_id_trabajador, :trabajador_estado, :contratado) \
+                        ;'), parameters)
+                db.session.commit()
+        else:
             # Loop to check if additional worker added in case, to be added to offerResult
-            # Leveraging the loop to update workerState(trabajador_estado)
             updates = False
             for each in response:
                 #
@@ -224,7 +244,7 @@ def generate_offerresults(id = None):
                                         LEFT JOIN vehiculos ON trabajadores.trabajadores_id_vehiculo = vehiculos.vehiculos_id_vehiculo \
                                         LEFT JOIN ofertas_resultados ON trabajadores.trabajadores_id_trabajador = ofertas_resultados.ofertas_resultados_id_trabajador \
                                     WHERE ofertas_resultados.ofertas_resultados_id_oferta = '+id+
-                                    ' GROUP BY trabajadores.trabajadores_id_trabajador \
+                                    ' GROUP BY trabajadores.trabajadores_doi \
                                     ORDER BY ofertas_resultados.ofertas_resultados_id_resultado;'))
                     db.session.close() # ONLY .CLOSE WITH .FETCHALL(), THE REST IS .COMMIT() !!!
                     response = [] 
@@ -253,7 +273,7 @@ def deleteoffer(id):
     })
     print("Offer Record Deleted id: "+id)
     print ("api deleteoffer ended ...")
-    return response
+    return jsonify(response)
 
 # Process to add offers(ofertas)
 @app.route('/addoffer', methods=["POST", "PUT"]) 
@@ -362,7 +382,7 @@ def editoffer(id):
     })
     print("Offers Record Modificated id: "+id)
     print ("api editoffers ended ...")
-    return response
+    return jsonify(response)
 
 # Process to get offer_secundary_databases data
 @app.route('/get_offer_secundary_databases', methods=['POST','GET'])
@@ -484,18 +504,27 @@ def get_offer_secundary_databases():
                     f'{listTables[8][0]}': response9,
                 }
     print ("api offers_secundary_databases ended ...")
-    return response
+    return jsonify(response)
 
 # Route to SELECT all data from Enterprises(empresas) database
 # for all or one Enterprise
 @app.route('/get_listoffers', methods=["POST", "GET"])
 @app.route('/get_listoffers/<id>', methods=["POST", "GET"])
 def get_listoffers(id = None):
-    sqlString = ""
+    sqlString = 'SELECT * FROM ofertas \
+                    JOIN empresas ON empresas.empresas_id_empresa = ofertas.ofertas_id_empresa \
+                    JOIN ocupaciones ON ocupaciones.ocupaciones_id_ocupacion = ofertas.ofertas_id_ocupacion \
+                    JOIN formaciones ON formaciones.formaciones_id_formacion = ofertas.ofertas_id_formacion \
+                    JOIN vehiculos ON vehiculos.vehiculos_id_vehiculo = ofertas.ofertas_id_vehiculo \
+                    JOIN municipios ON municipios.municipios_id_municipio = ofertas.ofertas_id_municipio \
+                    JOIN provincias ON provincias.provincias_id_provincia = ofertas.ofertas_id_provincia \
+                    JOIN contratos ON contratos.contratos_id_contrato = ofertas.ofertas_id_contrato \
+                    JOIN jornadas ON jornadas.jornadas_id_jornada = ofertas.ofertas_id_jornada '
     if (id != None):
-        result = db.session.execute(text('SELECT * FROM ofertas WHERE ofertas_id_oferta = '+id+';'))
+        result = db.session.execute(text(sqlString + ' WHERE ofertas_id_oferta = '+id+';'))
+        # result = db.session.execute(text('SELECT * FROM ofertas WHERE ofertas_id_oferta = '+id+';'))
     else:
-        result = db.session.execute(text('SELECT * FROM ofertas;'))
+        result = db.session.execute(text(sqlString))
     db.session.close() # ONLY .CLOSE WITH .FETCHALL(), THE REST IS .COMMIT() !!!
     response = [] 
     if request.method == 'POST' or request.method == 'GET':
@@ -747,9 +776,10 @@ def get_listworkers(id = None):
                 # Retrieving Ocupaciones/Ocupations DATA if id in use
                 resultOcupaciones=db.session.execute(text(
                     f'SELECT o.ocupaciones_id_ocupacion, o.ocupaciones_descripcion_ocupacion, \
-                            t.trabajadores_ocupaciones_meses \
+                            t.trabajadores_ocupaciones_meses, m.municipios_descripcion_municipio \
                         FROM trabajadores_ocupaciones t \
                         JOIN ocupaciones o ON ocupaciones_id_ocupacion = trabajadores_ocupaciones_id_ocupacion \
+                        JOIN municipios m on municipios_id_municipio = trabajadores_id_municipio \
                         WHERE t.trabajadores_ocupaciones_id_trabajador = '+id+';'))
                 db.session.commit()
                 # ITERATE OVER EACH RECORD IN RESULT AND ADD IT  
