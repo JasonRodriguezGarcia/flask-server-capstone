@@ -778,8 +778,6 @@ def get_listworkers(id = None):
                     f'SELECT o.ocupaciones_id_ocupacion, o.ocupaciones_descripcion_ocupacion, \
                             t.trabajadores_ocupaciones_meses, m.municipios_descripcion_municipio \
                         FROM trabajadores_ocupaciones t \
-                        JOIN ocupaciones o ON ocupaciones_id_ocupacion = trabajadores_ocupaciones_id_ocupacion \
-                        JOIN municipios m on municipios_id_municipio = trabajadores_id_municipio \
                         WHERE t.trabajadores_ocupaciones_id_trabajador = '+id+';'))
                 db.session.commit()
                 # ITERATE OVER EACH RECORD IN RESULT AND ADD IT  
