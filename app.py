@@ -388,26 +388,26 @@ def editoffer(id):
 @app.route('/get_offer_secundary_databases', methods=['POST','GET'])
 def get_offer_secundary_databases():
     # Creating databases list with fields, to be studied in the future with loop interation
-    listTables = [  ["empresas"],
-                    ["ocupaciones"],
-                    ["formaciones"],
-                    ["vehiculos"],
-                    ["municipios"],
-                    ["provincias"],
-                    ["contratos"],
-                    ["jornadas"],
-                    ["estados_ofertas"],
+    listTables = [  "empresas",
+                    "ocupaciones",
+                    "formaciones",
+                    "vehiculos",
+                    "municipios",
+                    "provincias",
+                    "contratos",
+                    "jornadas",
+                    "estados_ofertas",
     ]
     # Creating executions for each table
-    result1 = db.session.execute(text(f'SELECT * FROM '+listTables[0][0]+';'))
-    result2 = db.session.execute(text(f'SELECT * FROM '+listTables[1][0]+';'))
-    result3 = db.session.execute(text(f'SELECT * FROM '+listTables[2][0]+';'))
-    result4 = db.session.execute(text(f'SELECT * FROM '+listTables[3][0]+';'))
-    result5 = db.session.execute(text(f'SELECT * FROM '+listTables[4][0]+';'))
-    result6 = db.session.execute(text(f'SELECT * FROM '+listTables[5][0]+';'))
-    result7 = db.session.execute(text(f'SELECT * FROM '+listTables[6][0]+';'))
-    result8 = db.session.execute(text(f'SELECT * FROM '+listTables[7][0]+';'))
-    result9 = db.session.execute(text(f'SELECT * FROM '+listTables[8][0]+';'))
+    result2 = db.session.execute(text(f'SELECT * FROM '+listTables[1]+';'))
+    result1 = db.session.execute(text(f'SELECT * FROM '+listTables[0]+';'))
+    result3 = db.session.execute(text(f'SELECT * FROM '+listTables[2]+';'))
+    result4 = db.session.execute(text(f'SELECT * FROM '+listTables[3]+';'))
+    result5 = db.session.execute(text(f'SELECT * FROM '+listTables[4]+';'))
+    result6 = db.session.execute(text(f'SELECT * FROM '+listTables[5]+';'))
+    result7 = db.session.execute(text(f'SELECT * FROM '+listTables[6]+';'))
+    result8 = db.session.execute(text(f'SELECT * FROM '+listTables[7]+';'))
+    result9 = db.session.execute(text(f'SELECT * FROM '+listTables[8]+';'))
     db.session.close()
     # Getting data from each executions
     response = []
@@ -493,15 +493,15 @@ def get_offer_secundary_databases():
         response9.append(dict(zip(myResultFieldsName, record)))
 
     response =  {
-                    f'{listTables[0][0]}': response1,
-                    f'{listTables[1][0]}': response2,
-                    f'{listTables[2][0]}': response3,
-                    f'{listTables[3][0]}': response4,
-                    f'{listTables[4][0]}': response5,
-                    f'{listTables[5][0]}': response6,
-                    f'{listTables[6][0]}': response7,
-                    f'{listTables[7][0]}': response8,
-                    f'{listTables[8][0]}': response9,
+                    f'{listTables[0]}': response1,
+                    f'{listTables[1]}': response2,
+                    f'{listTables[2]}': response3,
+                    f'{listTables[3]}': response4,
+                    f'{listTables[4]}': response5,
+                    f'{listTables[5]}': response6,
+                    f'{listTables[6]}': response7,
+                    f'{listTables[7]}': response8,
+                    f'{listTables[8]}': response9,
                 }
     print ("api offers_secundary_databases ended ...")
     return jsonify(response)
@@ -566,7 +566,7 @@ def addenterprise():
     })
     print("Enterprises Record Created id: "+str(newCreatedId))
     print ("api addenterprises ended ...")
-    return response
+    return jsonify(response)
 
 # Route to edit one enterprise(empresa)
 @app.route('/editenterprise/<id>', methods=["POST", "GET"])
@@ -586,9 +586,13 @@ def editenterprise(id):
                 empresas_telefono = :telefono \
             WHERE empresas_id_empresa = '+id+';'), parameters)
     db.session.commit()
+    response = []
+    response.append ({
+        "id modificated": id
+    })
     print("Enterprise Record Modificated id: "+id)
     print ("api editenterprise ended ...")
-    return "Enterprise Record Modificated"
+    return jsonify(response)
 
 # Route to delete one enterprise
 @app.route('/deleteenterprise/<id>', methods=['DELETE'])
@@ -603,7 +607,7 @@ def deleteenterprise(id):
     })
     print("Enterprise Record Deleted id: "+id)
     print ("api deleteenterprise ended ...")
-    return response
+    return jsonify(response)
 
 # Route to SELECT all data from Enterprises(empresas) database
 # for all or one Enterprise
@@ -637,15 +641,10 @@ def check_cifexist(cif):
     myResultFieldsName = result.keys()
     #Convert data to dictionary
     response = []
-    # columnNames = [column[0] for column in cursor.description]
     for record in myResult:
         response.append(dict(zip(myResultFieldsName, record)))
-    print(type(response))
-    if len(response) == 0:
-        return "false"
-    else:
-        return "true"
-    # return jsonify(response)
+    return jsonify(not(len(response) == 0))
+    
 # Route to select one worker doi (can not be repeated).
 @app.route('/check_doiexist/<doi>', methods=["GET"])
 def check_doiexist(doi): 
@@ -655,40 +654,34 @@ def check_doiexist(doi):
     myResultFieldsName = result.keys()
     #Convert data to dictionary
     response = []
-    # columnNames = [column[0] for column in cursor.description]
     for record in myResult:
         response.append(dict(zip(myResultFieldsName, record)))
-    print(type(response))
-    if len(response) == 0:
-        return "false"
-    else:
-        return "true"
-    # return jsonify(response)
-
+    return jsonify(not(len(response) == 0))
 #
-#   FROM HERE TO THE END, is the initial code from the begining
 #
-
+#   FROM HERE UNTIL THE END, is the initial code from the begining, to improve a lot
+#
+#
 # Route to get worker secundary databases
 @app.route('/get_worker_secundary_databases', methods=['GET'])
 def get_worker_secundary_databases():
     # Creating databases list
-    listTables = [  ["trabajadores_situaciones"] ,
-                    ["carnets"],
-                    ["vehiculos"],
-                    ["provincias"],
-                    ["municipios"],
-                    ["ocupaciones"],
-                    ["formaciones"],
+    listTables = [  "trabajadores_situaciones",
+                    "carnets",
+                    "vehiculos",
+                    "provincias",
+                    "municipios",
+                    "ocupaciones",
+                    "formaciones",
     ]
     # Creating executions for each table
-    result1 = db.session.execute(text(f'SELECT * FROM '+listTables[0][0]+';'))
-    result2 = db.session.execute(text(f'SELECT * FROM '+listTables[1][0]+';'))
-    result3 = db.session.execute(text(f'SELECT * FROM '+listTables[2][0]+';'))
-    result4 = db.session.execute(text(f'SELECT * FROM '+listTables[3][0]+';'))
-    result5 = db.session.execute(text(f'SELECT * FROM '+listTables[4][0]+';'))
-    result6 = db.session.execute(text(f'SELECT * FROM '+listTables[5][0]+';'))
-    result7 = db.session.execute(text(f'SELECT * FROM '+listTables[6][0]+';'))
+    result1 = db.session.execute(text(f'SELECT * FROM '+listTables[0]+';'))
+    result2 = db.session.execute(text(f'SELECT * FROM '+listTables[1]+';'))
+    result3 = db.session.execute(text(f'SELECT * FROM '+listTables[2]+';'))
+    result4 = db.session.execute(text(f'SELECT * FROM '+listTables[3]+';'))
+    result5 = db.session.execute(text(f'SELECT * FROM '+listTables[4]+';'))
+    result6 = db.session.execute(text(f'SELECT * FROM '+listTables[5]+';'))
+    result7 = db.session.execute(text(f'SELECT * FROM '+listTables[6]+';'))
     db.session.commit()
     
     # Getting data from each executions
@@ -743,16 +736,16 @@ def get_worker_secundary_databases():
             "descripcion_formacion": dataList[1]
         })
     response =  {
-                    f'{listTables[0][0]}': response1,
-                    f'{listTables[1][0]}': response2,
-                    f'{listTables[2][0]}': response3,
-                    f'{listTables[3][0]}': response4,
-                    f'{listTables[4][0]}': response5,
-                    f'{listTables[5][0]}': response6,
-                    f'{listTables[6][0]}': response7
+                    f'{listTables[0]}': response1,
+                    f'{listTables[1]}': response2,
+                    f'{listTables[2]}': response3,
+                    f'{listTables[3]}': response4,
+                    f'{listTables[4]}': response5,
+                    f'{listTables[5]}': response6,
+                    f'{listTables[6]}': response7
                 }
     print ("api workers_secundary_databases ended ...")
-    return response
+    return jsonify(response)
 
 # Route to SELECT all data from workers(trabajadores) database
 # for all or one Worker
@@ -1005,10 +998,13 @@ def editworker(id):
                 ;'), parametersFormationsWorker) 
 
     db.session.commit()
-    print(result)
+    response = []
+    response.append ({
+        "id modificated": id
+    })
     print("Workers Record Modificated id: "+id)
     print ("api editworker ended ...")
-    return "Workers Record Modificated"
+    return jsonify(response)
 
 
 if __name__ == '__main__':
