@@ -416,7 +416,6 @@ def get_offer_secundary_databases():
     myResultFieldsName = result1.keys()
     #Converting data to dictionary
     response1 = []
-    # columnNames = [column[0] for column in cursor.description]
     for record in myResult:
         response1.append(dict(zip(myResultFieldsName, record)))
 
@@ -425,7 +424,6 @@ def get_offer_secundary_databases():
     myResultFieldsName = result2.keys()
     #Converting data to dictionary
     response2 = []
-    # columnNames = [column[0] for column in cursor.description]
     for record in myResult:
         response2.append(dict(zip(myResultFieldsName, record)))
 
@@ -434,7 +432,6 @@ def get_offer_secundary_databases():
     myResultFieldsName = result3.keys()
     #Converting data to dictionary
     response3 = []
-    # columnNames = [column[0] for column in cursor.description]
     for record in myResult:
         response3.append(dict(zip(myResultFieldsName, record)))
 
@@ -443,7 +440,6 @@ def get_offer_secundary_databases():
     myResultFieldsName = result4.keys()
     #Converting data to dictionary
     response4 = []
-    # columnNames = [column[0] for column in cursor.description]
     for record in myResult:
         response4.append(dict(zip(myResultFieldsName, record)))
 
@@ -452,7 +448,6 @@ def get_offer_secundary_databases():
     myResultFieldsName = result5.keys()
     #Converting data to dictionary
     response5 = []
-    # columnNames = [column[0] for column in cursor.description]
     for record in myResult:
         response5.append(dict(zip(myResultFieldsName, record)))
 
@@ -461,7 +456,6 @@ def get_offer_secundary_databases():
     myResultFieldsName = result6.keys()
     #Converting data to dictionary
     response6 = []
-    # columnNames = [column[0] for column in cursor.description]
     for record in myResult:
         response6.append(dict(zip(myResultFieldsName, record)))
 
@@ -470,7 +464,6 @@ def get_offer_secundary_databases():
     myResultFieldsName = result7.keys()
     #Converting data to dictionary
     response7 = []
-    # columnNames = [column[0] for column in cursor.description]
     for record in myResult:
         response7.append(dict(zip(myResultFieldsName, record)))
 
@@ -479,7 +472,6 @@ def get_offer_secundary_databases():
     myResultFieldsName = result8.keys()
     #Converting data to dictionary
     response8 = []
-    # columnNames = [column[0] for column in cursor.description]
     for record in myResult:
         response8.append(dict(zip(myResultFieldsName, record)))
 
@@ -488,7 +480,6 @@ def get_offer_secundary_databases():
     myResultFieldsName = result9.keys()
     #Converting data to dictionary
     response9 = []
-    # columnNames = [column[0] for column in cursor.description]
     for record in myResult:
         response9.append(dict(zip(myResultFieldsName, record)))
 
@@ -620,13 +611,11 @@ def get_listenterprises(id = None):
         result = db.session.execute(text('SELECT * FROM empresas;'))
     db.session.close() # ONLY CLOSE WITH .FETCHALL(), THE REST IS .COMMIT() !!!
     response = [] 
-    # print(request.get_json()['query'])
     if request.method == 'POST' or request.method == 'GET':
         myResult = result.fetchall()
         myResultFieldsName = result.keys()
         #Converting data to dictionary
         response = []
-        # columnNames = [column[0] for column in cursor.description]
         for record in myResult:
             response.append(dict(zip(myResultFieldsName, record)))
     print ("api get_listenterprises ended ...")
