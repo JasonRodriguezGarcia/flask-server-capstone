@@ -120,6 +120,7 @@ def generate_offerresults(id = None):
                     trabajadores_formaciones.trabajadores_formaciones_id_formacion, \
                     trabajadores.trabajadores_id_vehiculo, \
                     trabajadores.trabajadores_id_situacion, \
+                    trabajadores.trabajadores_curriculum, \
                     "x" as "trabajador_estado", \
                     "no contratado" as "trabajador_contratado" \
                     FROM trabajadores  \
@@ -236,6 +237,7 @@ def generate_offerresults(id = None):
                                     trabajadores_formaciones.trabajadores_formaciones_id_formacion, \
                                     trabajadores.trabajadores_id_vehiculo, \
                                     trabajadores.trabajadores_id_situacion, \
+                                    trabajadores.trabajadores_curriculum, \
                                     ofertas_resultados.ofertas_resultados_trabajador_estado as "trabajador_estado", \
                                     ofertas_resultados.ofertas_resultados_contratado as "trabajador_contratado" \
                                     FROM trabajadores  \
@@ -742,7 +744,11 @@ def get_worker_secundary_databases():
 @app.route('/get_listworkers/<id>', methods=["POST", "GET"])
 def get_listworkers(id = None):
     # GET THE SQLALCHEMY RESULTPROXY OBJECT
-    result = db.session.execute(text(request.get_json()['query']))
+    # result = db.session.execute(text(request.get_json()['query']))
+    if id:
+        result = db.session.execute(text('SELECT * FROM trabajadores WHERE trabajadores_id_trabajador='+id+';'))
+    else:
+        result = db.session.execute(text('SELECT * FROM trabajadores'))
     db.session.commit()
     response = [] 
     if request.method == 'POST' or request.method == 'GET':
