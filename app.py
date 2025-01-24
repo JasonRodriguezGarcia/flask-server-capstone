@@ -12,7 +12,7 @@ import os, json
 app = Flask(__name__)
 # Allowing access to Flask server to following ips, second IP is example for more ip's list case
 CORS(app, origins=["http://localhost:3000", "http://192.168.0.27", "https://client-react-capstone.onrender.com"])
-# CORS(app, origins=["http://localhost:3000", "http://192.168.0.27", "https://client-react-capstone.onrender.com"])
+
 
 db_file = './databases/database.db'
 # base application directory, where to save our sql table, where to place our sqlite database 
@@ -752,71 +752,146 @@ def get_listworkers(id = None):
     db.session.commit()
     response = [] 
     if request.method == 'POST' or request.method == 'GET':
+        responseOcupaciones = []
+        responseFormaciones = []
+        if (id != None):
+            # In case of "id" retrieving worker ocupations/formations data
+            # Retrieving Ocupaciones/Ocupations DATA if id in use
+            resultOcupaciones=db.session.execute(text(
+                f'SELECT CAST(o.ocupaciones_id_ocupacion AS VARCHAR) AS ocupaciones_id_ocupacion, \
+                        o.ocupaciones_descripcion_ocupacion, \
+                        t.trabajadores_ocupaciones_meses \
+                    FROM trabajadores_ocupaciones t \
+                    JOIN ocupaciones o ON ocupaciones_id_ocupacion = trabajadores_ocupaciones_id_ocupacion \
+                    WHERE t.trabajadores_ocupaciones_id_trabajador = '+id+';'))
+            db.session.commit()
+            # Creating 3rd level data Ocupaciones/Ocupations
+            myResult = resultOcupaciones.fetchall()
+            myResultFieldsName = resultOcupaciones.keys()
+            for record in myResult:
+                responseOcupaciones.append(dict(zip(myResultFieldsName, record)))
+            # keys = ['a', 'b', 'c']
+            # values = [1, 2, 3]
+            # dictionary = dict(zip(keys, values))
+            # print(dictionary) # {'a': 1, 'b': 2, 'c': 3}
+            
+            # ITERATE OVER EACH RECORD IN RESULT AND ADD IT  
+            # IN A PYTHON LIST/DICT OBJECT 
+            # Creating 3rd level data Ocupaciones/Ocupations
+            # for each2 in resultOcupaciones: 
+            #     dataList2 = list(each2)
+            #     responseOcupaciones.append({
+            #         "id_ocupacion": dataList2[0],
+            #         "descripcion_ocupacion": dataList2[1],
+            #         "meses": dataList2[2]
+            #     })
+            # Retrieving Formaciones/Formations DATA if id in use
+            resultFormaciones=db.session.execute(text(
+                f'SELECT CAST(f.trabajadores_formaciones_id_formacion AS VARCHAR) AS trabajadores_formaciones_id_formacion, \
+                        e.formaciones_descripcion_formacion \
+                    FROM trabajadores_formaciones f \
+                    JOIN formaciones e ON formaciones_id_formacion = f.trabajadores_formaciones_id_formacion \
+                    JOIN trabajadores t ON trabajadores_id_trabajador = f.trabajadores_formaciones_id_trabajador \
+                    WHERE t.trabajadores_id_trabajador = '+id+';'))
+            db.session.commit()
+            # Creating 3rd level data Formaciones/Formations
+            myResult = resultFormaciones.fetchall()
+            myResultFieldsName = resultFormaciones.keys()
+            for record in myResult:
+                responseFormaciones.append(dict(zip(myResultFieldsName, record)))
+            # ITERATE OVER EACH RECORD IN RESULT AND ADD IT  
+            # IN A PYTHON LIST/DICT OBJECT 
+            # Creating 3rd level data Formaciones/Formations
+            # for each2 in resultFormaciones: 
+            #     dataList2 = list(each2)
+            #     responseFormaciones.append({
+            #         "id_formacion": dataList2[0],
+            #         "descripcion_formacion": dataList2[1],
+            #     })
         # ITERATE OVER EACH RECORD IN RESULT AND ADD IT  
         # IN A PYTHON LIST/DICT OBJECT 
-        i = 1
+        # i = 1
         # Creating response fields
-        for each in result: 
-            responseOcupaciones = []
-            responseFormaciones = []
-            if (id != None):
-                # In case of "id" retrieving worker ocupations/formations data
-                # Retrieving Ocupaciones/Ocupations DATA if id in use
-                resultOcupaciones=db.session.execute(text(
-                    f'SELECT o.ocupaciones_id_ocupacion, o.ocupaciones_descripcion_ocupacion, \
-                            t.trabajadores_ocupaciones_meses \
-                        FROM trabajadores_ocupaciones t \
-                        JOIN ocupaciones o ON ocupaciones_id_ocupacion = trabajadores_ocupaciones_id_ocupacion \
-                        WHERE t.trabajadores_ocupaciones_id_trabajador = '+id+';'))
-                db.session.commit()
-                # ITERATE OVER EACH RECORD IN RESULT AND ADD IT  
-                # IN A PYTHON LIST/DICT OBJECT 
-                # Creating 3rd level data Ocupaciones/Ocupations
-                for each2 in resultOcupaciones: 
-                    dataList2 = list(each2)
-                    responseOcupaciones.append({
-                        "id_ocupacion": dataList2[0],
-                        "descripcion_ocupacion": dataList2[1],
-                        "meses": dataList2[2]
-                    })
-                # Retrieving Formaciones/Formations DATA if id in use
-                resultFormaciones=db.session.execute(text(
-                    f'SELECT f.trabajadores_formaciones_id_formacion, e.formaciones_descripcion_formacion \
-                        FROM trabajadores_formaciones f \
-                        JOIN formaciones e ON formaciones_id_formacion = f.trabajadores_formaciones_id_formacion \
-                        JOIN trabajadores t ON trabajadores_id_trabajador = f.trabajadores_formaciones_id_trabajador \
-                        WHERE t.trabajadores_id_trabajador = '+id+';'))
-                db.session.commit()
-                # ITERATE OVER EACH RECORD IN RESULT AND ADD IT  
-                # IN A PYTHON LIST/DICT OBJECT 
-                # Creating 3rd level data Formaciones/Formations
-                for each2 in resultFormaciones: 
-                    dataList2 = list(each2)
-                    responseFormaciones.append({
-                        "id_formacion": dataList2[0],
-                        "descripcion_formacion": dataList2[1],
-                    })
-            # Retrieving Trabajador/Worker DATA
-            dataList = list(each)
-            response.append({
-                "id": dataList[0],
-                "nombre": dataList[1],
-                "apellidos": dataList[2],
-                "fecha_nacimiento": dataList[3],
-                "doi": dataList[4],
-                "id_municipio": dataList[5],
-                "codigo_postal": dataList[6],
-                "id_provincia": dataList[7],
-                "id_vehiculo": dataList[8],
-                "curriculum": dataList[9],
-                "telefono_contacto": dataList[10],
-                "correo_electronico": dataList[11],
-                "id_situacion": dataList[12],
-                "lopd": bool(dataList[13]),
-                "ocupaciones": responseOcupaciones,
-                "formaciones": responseFormaciones
-                })
-            i+= 1
+        # for each in result: 
+        #     responseOcupaciones = []
+        #     responseFormaciones = []
+        #     resultOcupaciones=db.session.execute(text(
+        #         f'SELECT o.ocupaciones_id_ocupacion, o.ocupaciones_descripcion_ocupacion, \
+        #                 t.trabajadores_ocupaciones_meses \
+        #             FROM trabajadores_ocupaciones t \
+        #             JOIN ocupaciones o ON ocupaciones_id_ocupacion = trabajadores_ocupaciones_id_ocupacion \
+        #             WHERE t.trabajadores_ocupaciones_id_trabajador = '+id+';'))
+        #     db.session.commit()
+        myResult = result.fetchall()
+        myResultFieldsName = result.keys()
+        #Convert data to dictionary
+        response = []
+        for record in myResult:
+            myDict = {}
+            myDict = dict(zip(myResultFieldsName, record))
+            myDict['ocupaciones'] = responseOcupaciones
+            myDict['formaciones'] = responseFormaciones
+            response.append(myDict)
+            # response.append(dict(zip(myResultFieldsName, record)))
+
+            # if (id != None):
+            #     # In case of "id" retrieving worker ocupations/formations data
+            #     # Retrieving Ocupaciones/Ocupations DATA if id in use
+            #     resultOcupaciones=db.session.execute(text(
+            #         f'SELECT o.ocupaciones_id_ocupacion, o.ocupaciones_descripcion_ocupacion, \
+            #                 t.trabajadores_ocupaciones_meses \
+            #             FROM trabajadores_ocupaciones t \
+            #             JOIN ocupaciones o ON ocupaciones_id_ocupacion = trabajadores_ocupaciones_id_ocupacion \
+            #             WHERE t.trabajadores_ocupaciones_id_trabajador = '+id+';'))
+            #     db.session.commit()
+            #     # ITERATE OVER EACH RECORD IN RESULT AND ADD IT  
+            #     # IN A PYTHON LIST/DICT OBJECT 
+            #     # Creating 3rd level data Ocupaciones/Ocupations
+            #     for each2 in resultOcupaciones: 
+            #         dataList2 = list(each2)
+            #         responseOcupaciones.append({
+            #             "id_ocupacion": dataList2[0],
+            #             "descripcion_ocupacion": dataList2[1],
+            #             "meses": dataList2[2]
+            #         })
+            #     # Retrieving Formaciones/Formations DATA if id in use
+            #     resultFormaciones=db.session.execute(text(
+            #         f'SELECT f.trabajadores_formaciones_id_formacion, e.formaciones_descripcion_formacion \
+            #             FROM trabajadores_formaciones f \
+            #             JOIN formaciones e ON formaciones_id_formacion = f.trabajadores_formaciones_id_formacion \
+            #             JOIN trabajadores t ON trabajadores_id_trabajador = f.trabajadores_formaciones_id_trabajador \
+            #             WHERE t.trabajadores_id_trabajador = '+id+';'))
+            #     db.session.commit()
+            #     # ITERATE OVER EACH RECORD IN RESULT AND ADD IT  
+            #     # IN A PYTHON LIST/DICT OBJECT 
+            #     # Creating 3rd level data Formaciones/Formations
+            #     for each2 in resultFormaciones: 
+            #         dataList2 = list(each2)
+            #         responseFormaciones.append({
+            #             "id_formacion": dataList2[0],
+            #             "descripcion_formacion": dataList2[1],
+            #         })
+            # # Retrieving Trabajador/Worker DATA
+            # dataList = list(each)
+            # response.append({
+            #     "id": dataList[0],
+            #     "nombre": dataList[1],
+            #     "apellidos": dataList[2],
+            #     "fecha_nacimiento": dataList[3],
+            #     "doi": dataList[4],
+            #     "id_municipio": dataList[5],
+            #     "codigo_postal": dataList[6],
+            #     "id_provincia": dataList[7],
+            #     "id_vehiculo": dataList[8],
+            #     "curriculum": dataList[9],
+            #     "telefono_contacto": dataList[10],
+            #     "correo_electronico": dataList[11],
+            #     "id_situacion": dataList[12],
+            #     "lopd": bool(dataList[13]),
+            #     "ocupaciones": responseOcupaciones,
+            #     "formaciones": responseFormaciones
+            #     })
+            # i+= 1
     print ("api get_listworker ended ...")
     return jsonify(response)
 
@@ -884,8 +959,9 @@ def addworker():
     for each in ocupations2:
         parametersOcupationsWorker = ({
             "id_trabajador" : newCreatedId,
-            "id_ocupacion" : each['id_ocupacion'],
-            "meses" : int(each['meses'])
+            # "id_ocupacion" : each['id_ocupacion'],
+            "id_ocupacion" : each['ocupaciones_id_ocupacion'],
+            "meses" : int(each['trabajadores_ocupaciones_meses'])
         })
         result = db.session.execute(text(
             f'INSERT INTO trabajadores_ocupaciones (\
@@ -900,7 +976,7 @@ def addworker():
     for each in formations2:
         parametersFormationsWorker = ({
             "id_trabajador" : newCreatedId,
-            "id_formacion" : each['id_formacion'],
+            "id_formacion" : each['trabajadores_formaciones_id_formacion'],
         })
         result = db.session.execute(text(
             f'INSERT INTO trabajadores_formaciones (\
@@ -965,8 +1041,8 @@ def editworker(id):
     for each in ocupations2:
         parametersOcupationsWorker = ({
             "id_trabajador" : id,
-            "id_ocupacion" : each['id_ocupacion'],
-            "meses" : int(each['meses'])
+            "id_ocupacion" : each['ocupaciones_id_ocupacion'],
+            "meses" : int(each['trabajadores_ocupaciones_meses'])
         })
         result = db.session.execute(text(
             f'INSERT INTO trabajadores_ocupaciones (\
@@ -979,11 +1055,12 @@ def editworker(id):
     # Populating Formations table with new values
     formations = request.form.get("trabajadores[trabajadores_formaciones]")
     formations2= json.loads(formations) # Converting to list
+    print(formations2)
     for each in formations2:
         # print(each)
         parametersFormationsWorker = ({
             "id_trabajador" : id,
-            "id_formacion" : each['id_formacion'],
+            "id_formacion" : each['trabajadores_formaciones_id_formacion'],
         })
         result = db.session.execute(text(
             f'INSERT INTO trabajadores_formaciones (\
