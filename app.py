@@ -13,9 +13,9 @@ app = Flask(__name__)
 # Allowing access to Flask server to following ips, second IP is example for more ip's list case
 CORS(app, origins=["http://localhost:3000", "http://192.168.0.27",
                     "http://127.0.0.1:5502",
-                    "http://portfolio-jrg.free.nf/euskalmet_previsiones_test",
+                    "http://portfolio-jrg.free.nf",
                     "https://client-react-capstone.onrender.com",
-                    "https://jrodriguez.ikasle.ceinpro.es/euskalmet_previsiones_test"])
+                    "https://jrodriguez.ikasle.ceinpro.es"])
 
 
 db_file = './databases/database.db'
