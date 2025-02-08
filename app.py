@@ -11,7 +11,11 @@ import os, json
 
 app = Flask(__name__)
 # Allowing access to Flask server to following ips, second IP is example for more ip's list case
-CORS(app, origins=["http://localhost:3000", "http://192.168.0.27", "https://client-react-capstone.onrender.com"])
+CORS(app, origins=["http://localhost:3000", "http://192.168.0.27",
+                    "http://127.0.0.1:5502",
+                    "http://portfolio-jrg.free.nf",
+                    "https://client-react-capstone.onrender.com",
+                    "https://jrodriguez.ikasle.ceinpro.es/euskalmet_previsiones_test"])
 
 
 db_file = './databases/database.db'
@@ -30,6 +34,10 @@ ma = Marshmallow(app) # to add structure to the database
 # Los tipos de datos más comunes son los datos de formulario o los datos JSON.
 # Para enviar los datos del formulario, pasa un objeto FormData poblado. 
 # Esto utiliza el mismo formato que un formulario HTML, y se accedería con request.form en una vista Flask.
+
+@app.route('/get_weather_trend', methods=["POST", "GET"])
+def get_weather_trend():
+    return jsonify({ "texto": "respuesta de backend"})
 
 # Process to save offerresults for one offerResults(ofertas_resultados)
 @app.route('/save_offerresults/<id>', methods=['POST','PUT'])
