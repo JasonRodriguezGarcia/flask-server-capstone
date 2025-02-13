@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import text
 from flask_marshmallow import Marshmallow
 import os, json 
+import jwt
 # To run server
 # \CapstoneProject\Project1\flask-server> .\venv\Scripts\activate
 # \CapstoneProject\Project1\flask-server> flask run --debug  
@@ -37,7 +38,7 @@ ma = Marshmallow(app) # to add structure to the database
 
 @app.route('/get_weather_trend', methods=["POST", "GET"])
 def get_weather_trend():
-    return jsonify({ "texto": "respuesta de backend"})
+    return jsonify({ "meta": "ok", "data": "respuesta del servidor back-end"})
 
 # Process to save offerresults for one offerResults(ofertas_resultados)
 @app.route('/save_offerresults/<id>', methods=['POST','PUT'])
