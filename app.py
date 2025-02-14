@@ -6,6 +6,10 @@ from sqlalchemy import text
 from flask_marshmallow import Marshmallow
 import os, json 
 import jwt, time
+# https://pyjwt.readthedocs.io/en/stable/
+# https://cosasdedevs.com/posts/usar-requests-python-api-rest/
+
+
 # To run server
 # \CapstoneProject\Project1\flask-server> .\venv\Scripts\activate
 # \CapstoneProject\Project1\flask-server> flask run --debug  
@@ -63,7 +67,7 @@ def get_weather_trend():
     decoded = jwt.decode(token1, options={"verify_signature": False}) # works in PyJWT >= v2.0
     print (decoded)
     print (decoded["aud"])
-    return jsonify({ "meta": "ok", "data": "respuesta del servidor back-end", "jwt": decoded})
+    return jsonify({ "meta": "ok", "data": "respuesta del servidor back-end", "jwt": "Top SECRET"})
 
 # Process to save offerresults for one offerResults(ofertas_resultados)
 @app.route('/save_offerresults/<id>', methods=['POST','PUT'])
