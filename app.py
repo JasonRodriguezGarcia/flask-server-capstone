@@ -6,9 +6,7 @@ from sqlalchemy import text
 from flask_marshmallow import Marshmallow
 import os, json 
 import jwt, time
-# https://pyjwt.readthedocs.io/en/stable/
-# https://cosasdedevs.com/posts/usar-requests-python-api-rest/
-
+import requests
 
 # To run server
 # \CapstoneProject\Project1\flask-server> .\venv\Scripts\activate
@@ -42,10 +40,21 @@ ma = Marshmallow(app) # to add structure to the database
 
 @app.route('/get_weather_trend', methods=["POST", "GET"])
 def get_weather_trend():
+    # https://pyjwt.readthedocs.io/en/stable/
+    # https://cosasdedevs.com/posts/usar-requests-python-api-rest/
+    # https://docs.python.org/3/library/time.html#time.localtime
+    # https://docs.python.org/3/library/time.html#time.gmtime
+
+
     private_key = b"-----BEGIN RSA PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC/3MgyqKVeYzALWeGXatp/XK32yir+MKp38CGxy1Dwhs//f7OFDQICrPbnvhF8oFyaHIjszHbppesndWKFZjce98trmTGVrfmjcREfc4fYT0+hpz3HL9wxamRG/75H3k3pPKNgEi/mgDFAIIPhYpDda4UC9s50neF/xzzavA3ztack/fTfVY1dcXLwG3WksCgXLogpGRsqmfqI6n0Yj6StPvqejKYWxuBphE3SXaywHOHMTdr4ewUfE6W93FEozJnbu13oVcMFSyeVNPz8fdNRyf0zeY1bq0gH8Uq6vJ5V7eFqrR8jLqLMvjKgKJWL93CMAh0mnN84e43S3/c4X6irAgMBAAECggEAEf3AkiuJUkgHzdCwXFQLSC0nLQC5NlvW6GdOqY7wuJVTtNhDO8NEAH86qfGDT0X0WQk698WWkwNZgTo7Mloq6g7/dsgHQ8tsINzt556cSvbo9zYpD2AYDFQ3MgcyTyfz816ZzVz3O+yicap642wsPG8kKmp9YqcZabODq9k9j7A76nrAUYFmlgAIMWsvZivdakSJjLABzHRM2hvuqbSqmXRFLicqE5dpal08cjZJjQw5b+zFDyPAtLeV7BrfVxBKx46yRtrwPDrCkF5H1tccnqOagA9bXmda5njhlPrApnAftJ+F47RjxI7w2VL6cW6HZxuW23NohNh4JgLycqWDvQKBgQDqZ3XMhXyyCuGplk10KKfjL+FXOZXlyKcJtQ2csgWZ6XK2o3M+QE82z+GjM0BvPbqxLxRpUw5IXgNXuP2kryE6Ezpu/gL/ARci6DfepviUvMRCuMiiLhdJ16IBHTaeeTdl3Q4Z02KVX/k4SDMnEh1zXFN3gBpqEXlsuwJf9CZLHQKBgQDRifRDwBAhjzq8myCORMOS8QJs5Ain2zT5bvV79gLlSi/sUWWrSjCN+GsgHagsn9xpIsQ5JJbLxceRE/qV+8HVYsI3RUAe4hDeaK22arnGZIZg8+AzpkS6kQuSmnKfsLD6Xbo+JHvIEahycvWWSFK3Z+s3kkuOPWYwPHTzksowZwKBgQDpkh53pawTXXRvoC2dycVBRLyuRdtwFPkdWyQtN9cM/uonw8daCIrme07DaJaUQlZ9qAQWz4Qz6Do8d0GHkFrzm6VmZAZoQ5XiWrMRUh/xVgfa1HZX5MWf9xafNZTvZKom/pbGdTSO1AtqYcdW714ZTa5+LVAk0TTFe7NqGcbuoQKBgCSBnnb3TVgrdhZKCKAAxvog10VVbVShUldqx4YzVEnSZQsNG2N+Z3s0nqVXxWcQ6vu+POWfxE34RU63Zl8fH6QnsqKihAtdY4b8QdeYPImeFfNqSdN10l+WyadfFT1RMWRNVBdjj9VJjklyUes+6npdtpNV/6fmdplMzytolaVdAoGBAMg6br792JlZ6rFhvExsWcv7jPUoPVyDQymlq/EbgDkKJTeuKGuF5P7JOMXKcoo8N8nXQNA0YLGwLld1GzjFLgzpt7vtL7VpOWPE0L5V12JVJKj5hXuJwwdaxexTiiWSQ/rEN+ekG7g3YmxJY6qZLk9dndoFAfIoPHtzk5UcllJI\n-----END RSA PRIVATE KEY-----\n"
     public_key = b"-----BEGIN PUBLIC KEY-----\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv9zIMqilXmMwC1nhl2raf1yt9soq/jCqd/AhsctQ8IbP/3+zhQ0CAqz2574RfKBcmhyI7Mx26aXrJ3VihWY3HvfLa5kxla35o3ERH3OH2E9Poac9xy/cMWpkRv++R95N6TyjYBIv5oAxQCCD4WKQ3WuFAvbOdJ3hf8c82rwN87WnJP3031WNXXFy8Bt1pLAoFy6IKRkbKpn6iOp9GI+krT76noymFsbgaYRN0l2ssBzhzE3a+HsFHxOlvdxRKMyZ27td6FXDBUsnlTT8/H3TUcn9M3mNW6tIB/FKuryeVe3haq0fIy6izL4yoCiVi/dwjAIdJpzfOHuN0t/3OF+oqwIDAQAB\n-----END PUBLIC KEY-----\n"
-    iat = time.time()
+    today = time
+
+    iat = today.time()
     exp = iat + 3600
+    print(iat)
+    print(exp)
+    print(today.strftime("%Y/%m/%d"))
 
     oHeader = {
         "alg": 'RS256',
@@ -61,13 +70,39 @@ def get_weather_trend():
     }
     token1 = jwt.encode(oPayload, private_key, algorithm="RS256", headers=oHeader)
     print (token1)
-    options1 = {'verify_aud': False, 'require_sub': True}
-    # decoded = jwt.decode(token, public_key, algorithms= ["RS256"]) # works in PyJWT >= v2.0
-    # decoded = jwt.decode(token1, public_key, algorithms=["RS256"]) # works in PyJWT >= v2.0
-    decoded = jwt.decode(token1, options={"verify_signature": False}) # works in PyJWT >= v2.0
-    print (decoded)
-    print (decoded["aud"])
-    return jsonify({ "meta": "ok", "data": "respuesta del servidor back-end", "jwt": "Top SECRET"})
+    # decoded = jwt.decode(token1, options={"verify_signature": False}) # works in PyJWT >= v2.0
+    # print (decoded)
+    # print (decoded["aud"])
+    # return jsonify({ "meta": "ok", "data": "respuesta del servidor back-end", "key": "Top SECRET!!"})
+
+    oHeader = {
+        "alg": 'RS256',
+        "typ": 'JWT'
+    }
+    oPayload =  {
+        "aud": "met01.apikey",
+        "iss": "test jason",
+        "exp": exp,
+        "version": "1.0.0",
+        "iat": iat,
+        "email": "jason_rg1@hotmail.com"
+    }
+
+    url =  'https://api.euskadi.eus/euskalmet/weather/regions/basque_country/forecast/trends/at/'+ \
+            today.strftime("%Y/%m/%d")+'/for/'+today.strftime("%Y%m%d")
+    print(url)
+
+    headers = {
+        'Authorization': 'Bearer '+token1
+    }
+
+    response = requests.request("GET", url, headers=headers)
+    print(response.text)
+    print(response.json())
+    print(response.status_code)
+    print(response.headers)
+
+    return response.json()
 
 # Process to save offerresults for one offerResults(ofertas_resultados)
 @app.route('/save_offerresults/<id>', methods=['POST','PUT'])
