@@ -18,7 +18,7 @@ CORS(app, origins=["http://localhost:3000", "http://192.168.0.27",
                     "http://127.0.0.1:5502",
                     "http://portfolio-jrg.free.nf",
                     "https://client-react-capstone.onrender.com",
-                    "https://jrodriguez.ikasle.ceinpro.es"])
+                    "https://jrodriguez.ikasle.ceinpro.es", "*"])
 
 
 db_file = './databases/database.db'
