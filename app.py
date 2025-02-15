@@ -90,8 +90,8 @@ def get_weather_trend():
     }
 
     url =  'https://api.euskadi.eus/euskalmet/weather/regions/basque_country/forecast/trends/at/'+ \
-            time.strftime("%Y/%m/%d", time.localtime(yesterday))+'/for/'+time.strftime("%Y%m%d", time.localtime(yesterday))
-            # today.strftime("%Y/%m/%d")+'/for/'+today.strftime("%Y%m%d")
+            today.strftime("%Y/%m/%d")+'/for/'+today.strftime("%Y%m%d")
+            # time.strftime("%Y/%m/%d", time.localtime(yesterday))+'/for/'+time.strftime("%Y%m%d", time.localtime(yesterday))
     print(url)
 
     headers = {
