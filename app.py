@@ -7,6 +7,8 @@ from flask_marshmallow import Marshmallow
 import os, json 
 import jwt, time
 import requests
+from dotenv import load_dotenv
+load_dotenv()
 
 # To run server
 # \CapstoneProject\Project1\flask-server> .\venv\Scripts\activate
@@ -21,6 +23,7 @@ CORS(app, origins=["http://localhost:3000", "http://192.168.0.27",
                     "https://jrodriguez.ikasle.ceinpro.es", "*"])
 
 print("CLAVE: ", os.getenv("PRIVATE_KEY"))
+
 db_file = './databases/database.db'
 # base application directory, where to save our sql table, where to place our sqlite database 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -46,9 +49,9 @@ def get_weather_trend():
     # https://docs.python.org/3/library/time.html#time.gmtime
 
 
-    # PRIVATE_KEY = b"-----BEGIN RSA PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC/3MgyqKVeYzALWeGXatp/XK32yir+MKp38CGxy1Dwhs//f7OFDQICrPbnvhF8oFyaHIjszHbppesndWKFZjce98trmTGVrfmjcREfc4fYT0+hpz3HL9wxamRG/75H3k3pPKNgEi/mgDFAIIPhYpDda4UC9s50neF/xzzavA3ztack/fTfVY1dcXLwG3WksCgXLogpGRsqmfqI6n0Yj6StPvqejKYWxuBphE3SXaywHOHMTdr4ewUfE6W93FEozJnbu13oVcMFSyeVNPz8fdNRyf0zeY1bq0gH8Uq6vJ5V7eFqrR8jLqLMvjKgKJWL93CMAh0mnN84e43S3/c4X6irAgMBAAECggEAEf3AkiuJUkgHzdCwXFQLSC0nLQC5NlvW6GdOqY7wuJVTtNhDO8NEAH86qfGDT0X0WQk698WWkwNZgTo7Mloq6g7/dsgHQ8tsINzt556cSvbo9zYpD2AYDFQ3MgcyTyfz816ZzVz3O+yicap642wsPG8kKmp9YqcZabODq9k9j7A76nrAUYFmlgAIMWsvZivdakSJjLABzHRM2hvuqbSqmXRFLicqE5dpal08cjZJjQw5b+zFDyPAtLeV7BrfVxBKx46yRtrwPDrCkF5H1tccnqOagA9bXmda5njhlPrApnAftJ+F47RjxI7w2VL6cW6HZxuW23NohNh4JgLycqWDvQKBgQDqZ3XMhXyyCuGplk10KKfjL+FXOZXlyKcJtQ2csgWZ6XK2o3M+QE82z+GjM0BvPbqxLxRpUw5IXgNXuP2kryE6Ezpu/gL/ARci6DfepviUvMRCuMiiLhdJ16IBHTaeeTdl3Q4Z02KVX/k4SDMnEh1zXFN3gBpqEXlsuwJf9CZLHQKBgQDRifRDwBAhjzq8myCORMOS8QJs5Ain2zT5bvV79gLlSi/sUWWrSjCN+GsgHagsn9xpIsQ5JJbLxceRE/qV+8HVYsI3RUAe4hDeaK22arnGZIZg8+AzpkS6kQuSmnKfsLD6Xbo+JHvIEahycvWWSFK3Z+s3kkuOPWYwPHTzksowZwKBgQDpkh53pawTXXRvoC2dycVBRLyuRdtwFPkdWyQtN9cM/uonw8daCIrme07DaJaUQlZ9qAQWz4Qz6Do8d0GHkFrzm6VmZAZoQ5XiWrMRUh/xVgfa1HZX5MWf9xafNZTvZKom/pbGdTSO1AtqYcdW714ZTa5+LVAk0TTFe7NqGcbuoQKBgCSBnnb3TVgrdhZKCKAAxvog10VVbVShUldqx4YzVEnSZQsNG2N+Z3s0nqVXxWcQ6vu+POWfxE34RU63Zl8fH6QnsqKihAtdY4b8QdeYPImeFfNqSdN10l+WyadfFT1RMWRNVBdjj9VJjklyUes+6npdtpNV/6fmdplMzytolaVdAoGBAMg6br792JlZ6rFhvExsWcv7jPUoPVyDQymlq/EbgDkKJTeuKGuF5P7JOMXKcoo8N8nXQNA0YLGwLld1GzjFLgzpt7vtL7VpOWPE0L5V12JVJKj5hXuJwwdaxexTiiWSQ/rEN+ekG7g3YmxJY6qZLk9dndoFAfIoPHtzk5UcllJI\n-----END RSA PRIVATE KEY-----\n"
+    PRIVATE_KEY = b"-----BEGIN RSA PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC/3MgyqKVeYzALWeGXatp/XK32yir+MKp38CGxy1Dwhs//f7OFDQICrPbnvhF8oFyaHIjszHbppesndWKFZjce98trmTGVrfmjcREfc4fYT0+hpz3HL9wxamRG/75H3k3pPKNgEi/mgDFAIIPhYpDda4UC9s50neF/xzzavA3ztack/fTfVY1dcXLwG3WksCgXLogpGRsqmfqI6n0Yj6StPvqejKYWxuBphE3SXaywHOHMTdr4ewUfE6W93FEozJnbu13oVcMFSyeVNPz8fdNRyf0zeY1bq0gH8Uq6vJ5V7eFqrR8jLqLMvjKgKJWL93CMAh0mnN84e43S3/c4X6irAgMBAAECggEAEf3AkiuJUkgHzdCwXFQLSC0nLQC5NlvW6GdOqY7wuJVTtNhDO8NEAH86qfGDT0X0WQk698WWkwNZgTo7Mloq6g7/dsgHQ8tsINzt556cSvbo9zYpD2AYDFQ3MgcyTyfz816ZzVz3O+yicap642wsPG8kKmp9YqcZabODq9k9j7A76nrAUYFmlgAIMWsvZivdakSJjLABzHRM2hvuqbSqmXRFLicqE5dpal08cjZJjQw5b+zFDyPAtLeV7BrfVxBKx46yRtrwPDrCkF5H1tccnqOagA9bXmda5njhlPrApnAftJ+F47RjxI7w2VL6cW6HZxuW23NohNh4JgLycqWDvQKBgQDqZ3XMhXyyCuGplk10KKfjL+FXOZXlyKcJtQ2csgWZ6XK2o3M+QE82z+GjM0BvPbqxLxRpUw5IXgNXuP2kryE6Ezpu/gL/ARci6DfepviUvMRCuMiiLhdJ16IBHTaeeTdl3Q4Z02KVX/k4SDMnEh1zXFN3gBpqEXlsuwJf9CZLHQKBgQDRifRDwBAhjzq8myCORMOS8QJs5Ain2zT5bvV79gLlSi/sUWWrSjCN+GsgHagsn9xpIsQ5JJbLxceRE/qV+8HVYsI3RUAe4hDeaK22arnGZIZg8+AzpkS6kQuSmnKfsLD6Xbo+JHvIEahycvWWSFK3Z+s3kkuOPWYwPHTzksowZwKBgQDpkh53pawTXXRvoC2dycVBRLyuRdtwFPkdWyQtN9cM/uonw8daCIrme07DaJaUQlZ9qAQWz4Qz6Do8d0GHkFrzm6VmZAZoQ5XiWrMRUh/xVgfa1HZX5MWf9xafNZTvZKom/pbGdTSO1AtqYcdW714ZTa5+LVAk0TTFe7NqGcbuoQKBgCSBnnb3TVgrdhZKCKAAxvog10VVbVShUldqx4YzVEnSZQsNG2N+Z3s0nqVXxWcQ6vu+POWfxE34RU63Zl8fH6QnsqKihAtdY4b8QdeYPImeFfNqSdN10l+WyadfFT1RMWRNVBdjj9VJjklyUes+6npdtpNV/6fmdplMzytolaVdAoGBAMg6br792JlZ6rFhvExsWcv7jPUoPVyDQymlq/EbgDkKJTeuKGuF5P7JOMXKcoo8N8nXQNA0YLGwLld1GzjFLgzpt7vtL7VpOWPE0L5V12JVJKj5hXuJwwdaxexTiiWSQ/rEN+ekG7g3YmxJY6qZLk9dndoFAfIoPHtzk5UcllJI\n-----END RSA PRIVATE KEY-----\n"
     today = time
-    # substracts 86400 secons = 1 day
+    # substracts 86400 seconds = 1 day
     yesterday = today.time() - 86400
     iat = today.time()
     exp = iat + 3600 # adds 3600 seconds = 1 hour
@@ -69,7 +72,7 @@ def get_weather_trend():
         "email": "jason_rg1@hotmail.com"
     }
     # token1 = jwt.encode(oPayload, PRIVATE_KEY, algorithm="RS256", headers=oHeader)
-    token1 = jwt.encode(oPayload, os.getenv("PRIVATE_KEY"), algorithm="RS256", headers=oHeader)
+    token1 = jwt.encode(oPayload, PRIVATE_KEY, algorithm="RS256", headers=oHeader)
     print (token1)
     # decoded = jwt.decode(token1, options={"verify_signature": False}) # works in PyJWT >= v2.0
     # print (decoded)
