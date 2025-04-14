@@ -20,7 +20,7 @@ CORS(app, origins=["http://localhost:3000", "http://192.168.0.27",
                     "https://client-react-capstone.onrender.com",
                     "https://jrodriguez.ikasle.ceinpro.es", "*"])
 
-
+print("CLAVE: ", os.getenv("PRIVATE_KEY"))
 db_file = './databases/database.db'
 # base application directory, where to save our sql table, where to place our sqlite database 
 basedir = os.path.abspath(os.path.dirname(__file__))
