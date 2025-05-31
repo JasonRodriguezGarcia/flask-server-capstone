@@ -75,7 +75,7 @@ def get_weather_trend():
         "email": "jason_rg1@hotmail.com"
     }
     # token1 = jwt.encode(oPayload, PRIVATE_KEY, algorithm="RS256", headers=oHeader)
-    token1 = jwt.encode(oPayload, PRIVATE_KEY, algorithm="RS256", headers=oHeader)
+    token1 = jwt.encode(oPayload, app.config['SECRET_KEY'], algorithm="RS256", headers=oHeader)
     print (token1)
     # decoded = jwt.decode(token1, options={"verify_signature": False}) # works in PyJWT >= v2.0
     # print (decoded)
