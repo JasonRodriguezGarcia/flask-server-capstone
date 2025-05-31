@@ -18,7 +18,7 @@ import requests
 
 app = Flask(__name__)
 
-app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['PRIVATET_KEY'] = os.getenv('PRIVATE_KEY')
 
 # Allowing access to Flask server to following ips, second IP is example for more ip's list case
 CORS(app, origins=["http://localhost:3000", "http://192.168.0.27",
