@@ -18,7 +18,7 @@ import requests
 
 app = Flask(__name__)
 
-app.config['PRIVATE_KEY'] = os.getenv('PRIVATE_KEY')
+app.config['PRIVATE_KEY'] = os.getenv('PRIVATE_KEY').encode('utf-8')
 
 # Allowing access to Flask server to following ips, second IP is example for more ip's list case
 CORS(app, origins=["http://localhost:3000", "http://192.168.0.27",
@@ -75,7 +75,7 @@ def get_weather_trend():
         "email": "jason_rg1@hotmail.com"
     }
     # token1 = jwt.encode(oPayload, PRIVATE_KEY, algorithm="RS256", headers=oHeader)
-    token1 = jwt.encode(oPayload, app.config['SECRET_KEY'], algorithm="RS256", headers=oHeader)
+    token1 = jwt.encode(oPayload, app.config['PRIVATE_KEY'], algorithm="RS256", headers=oHeader)
     print (token1)
     # decoded = jwt.decode(token1, options={"verify_signature": False}) # works in PyJWT >= v2.0
     # print (decoded)
