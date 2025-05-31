@@ -2,11 +2,6 @@ from flask import Flask, request, jsonify, flash, json
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 
-from dotenv import load_dotenv
-import base64
-# Cargar el archivo .env
-load_dotenv()
-
 from sqlalchemy import text
 from flask_marshmallow import Marshmallow
 import os, json 
@@ -18,11 +13,6 @@ import requests
 # \CapstoneProject\Project1\flask-server> flask run --debug  
 
 app = Flask(__name__)
-
-# para recoger PRIVATE_KEY_B64 del env
-private_key_b64 = os.getenv("PRIVATE_KEY_B64")
-PRIVATE_KEY = base64.b64decode(private_key_b64)
-
 # Allowing access to Flask server to following ips, second IP is example for more ip's list case
 CORS(app, origins=["http://localhost:3000", "http://192.168.0.27",
                     "http://127.0.0.1:5502",
@@ -56,6 +46,7 @@ def get_weather_trend():
 
 
     # PRIVATE_KEY = b"-----BEGIN RSA PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQC/3MgyqKVeYzALWeGXatp/XK32yir+MKp38CGxy1Dwhs//f7OFDQICrPbnvhF8oFyaHIjszHbppesndWKFZjce98trmTGVrfmjcREfc4fYT0+hpz3HL9wxamRG/75H3k3pPKNgEi/mgDFAIIPhYpDda4UC9s50neF/xzzavA3ztack/fTfVY1dcXLwG3WksCgXLogpGRsqmfqI6n0Yj6StPvqejKYWxuBphE3SXaywHOHMTdr4ewUfE6W93FEozJnbu13oVcMFSyeVNPz8fdNRyf0zeY1bq0gH8Uq6vJ5V7eFqrR8jLqLMvjKgKJWL93CMAh0mnN84e43S3/c4X6irAgMBAAECggEAEf3AkiuJUkgHzdCwXFQLSC0nLQC5NlvW6GdOqY7wuJVTtNhDO8NEAH86qfGDT0X0WQk698WWkwNZgTo7Mloq6g7/dsgHQ8tsINzt556cSvbo9zYpD2AYDFQ3MgcyTyfz816ZzVz3O+yicap642wsPG8kKmp9YqcZabODq9k9j7A76nrAUYFmlgAIMWsvZivdakSJjLABzHRM2hvuqbSqmXRFLicqE5dpal08cjZJjQw5b+zFDyPAtLeV7BrfVxBKx46yRtrwPDrCkF5H1tccnqOagA9bXmda5njhlPrApnAftJ+F47RjxI7w2VL6cW6HZxuW23NohNh4JgLycqWDvQKBgQDqZ3XMhXyyCuGplk10KKfjL+FXOZXlyKcJtQ2csgWZ6XK2o3M+QE82z+GjM0BvPbqxLxRpUw5IXgNXuP2kryE6Ezpu/gL/ARci6DfepviUvMRCuMiiLhdJ16IBHTaeeTdl3Q4Z02KVX/k4SDMnEh1zXFN3gBpqEXlsuwJf9CZLHQKBgQDRifRDwBAhjzq8myCORMOS8QJs5Ain2zT5bvV79gLlSi/sUWWrSjCN+GsgHagsn9xpIsQ5JJbLxceRE/qV+8HVYsI3RUAe4hDeaK22arnGZIZg8+AzpkS6kQuSmnKfsLD6Xbo+JHvIEahycvWWSFK3Z+s3kkuOPWYwPHTzksowZwKBgQDpkh53pawTXXRvoC2dycVBRLyuRdtwFPkdWyQtN9cM/uonw8daCIrme07DaJaUQlZ9qAQWz4Qz6Do8d0GHkFrzm6VmZAZoQ5XiWrMRUh/xVgfa1HZX5MWf9xafNZTvZKom/pbGdTSO1AtqYcdW714ZTa5+LVAk0TTFe7NqGcbuoQKBgCSBnnb3TVgrdhZKCKAAxvog10VVbVShUldqx4YzVEnSZQsNG2N+Z3s0nqVXxWcQ6vu+POWfxE34RU63Zl8fH6QnsqKihAtdY4b8QdeYPImeFfNqSdN10l+WyadfFT1RMWRNVBdjj9VJjklyUes+6npdtpNV/6fmdplMzytolaVdAoGBAMg6br792JlZ6rFhvExsWcv7jPUoPVyDQymlq/EbgDkKJTeuKGuF5P7JOMXKcoo8N8nXQNA0YLGwLld1GzjFLgzpt7vtL7VpOWPE0L5V12JVJKj5hXuJwwdaxexTiiWSQ/rEN+ekG7g3YmxJY6qZLk9dndoFAfIoPHtzk5UcllJI\n-----END RSA PRIVATE KEY-----\n"
+    PRIVATE_KEY = os.environ.get('PRIVATE_KEY')
     today = time
     # substracts 86400 secons = 1 day
     yesterday = today.time() - 86400
