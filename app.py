@@ -4,8 +4,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 from dotenv import load_dotenv
 import base64
-private_key_b64 = os.getenv("PRIVATE_KEY_B64")
-PRIVATE_KEY = base64.b64decode(private_key_b64)
 # Cargar el archivo .env
 load_dotenv()
 
@@ -21,6 +19,9 @@ import requests
 
 app = Flask(__name__)
 
+# para recoger PRIVATE_KEY_B64 del env
+private_key_b64 = os.getenv("PRIVATE_KEY_B64")
+PRIVATE_KEY = base64.b64decode(private_key_b64)
 
 # Allowing access to Flask server to following ips, second IP is example for more ip's list case
 CORS(app, origins=["http://localhost:3000", "http://192.168.0.27",
