@@ -12,6 +12,10 @@
 /build
 /env
 .env
+.venv
+
+# keys
+/keys
 
 # misc
 .DS_Store
